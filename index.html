@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080808">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<meta name="apple-mobile-web-app-capable" content="yes"><title>Rick Rich</title>
+<style>
+:root{--gold:#e0bf65;--bg:#090909;--panel:#151515;--line:#3a301b}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#2a210d,#090909 55%);color:#f7f2e5;font:16px system-ui,Arial}.wrap{max-width:720px;margin:auto;padding:20px 14px 60px}header{padding:14px 0 20px;border-bottom:1px solid var(--line);margin-bottom:20px}.brand{font-size:28px;font-weight:900;letter-spacing:2px;color:var(--gold)}.tag{font-size:11px;letter-spacing:1px;color:#aaa}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;margin:16px 0}h1{font-size:27px}h2{font-size:19px;color:var(--gold)}.muted{color:#aaa;font-size:13px}label{display:block;margin:12px 0 5px;font-size:13px}input,textarea{width:100%;padding:12px;background:#090909;color:#fff;border:1px solid #49402b;border-radius:10px;font:inherit}textarea{min-height:90px;resize:vertical}button{border:0;border-radius:10px;padding:11px 15px;font-weight:750;cursor:pointer;background:var(--gold);color:#171107}.secondary{background:#262626;color:var(--gold);border:1px solid #55472a}.danger{background:#351818;color:#ffaaaa}.row{display:flex;gap:9px;flex-wrap:wrap;margin-top:13px}.row>*{flex:1}.hidden{display:none!important}.notice{padding:11px;border:1px solid #5a4924;background:#201a0b;color:#f1d98d;border-radius:10px;white-space:pre-wrap;font-size:13px}.profile{display:flex;gap:12px;align-items:center}.avatar{height:46px;width:46px;display:grid;place-items:center;border-radius:50%;background:var(--gold);color:#111;font-weight:900;font-size:20px}.post{border-top:1px solid #383020;padding:15px 0}.posthead{display:flex;justify-content:space-between;gap:10px}.author{color:var(--gold);font-weight:800}.date{font-size:11px;color:#aaa}.postbody{white-space:pre-wrap;overflow-wrap:anywhere;margin-top:10px}footer{text-align:center;color:#777;font-size:12px;padding:20px}
+</style>
+</head><body><div class="wrap">
+<header><div class="brand">RICK RICH</div><div class="tag">YOUR WORLD. YOUR STYLE. YOUR PEOPLE.</div></header>
+<section id="authCard" class="card"><h1>Welcome to <span style="color:var(--gold)">Rick Rich.</span></h1><p class="muted">Your people. Your thoughts. Your style.</p><div id="status" class="notice">Connecting…</div>
+<form id="authForm"><label>Email address</label><input id="email" type="email" required placeholder="you@example.com"><label>Password</label><input id="password" type="password" minlength="6" required placeholder="At least 6 characters"><div class="row"><button type="submit">Log in</button><button class="secondary" id="signup" type="button">Create account</button></div></form></section>
+<main id="app" class="hidden">
+<section class="card"><div class="profile"><div class="avatar" id="avatar">R</div><div><h2 id="welcome" style="margin:0">Your profile</h2><div class="muted" id="accountEmail"></div></div><button class="secondary" id="logout">Log out</button></div>
+<label>Display name</label><input id="displayName" maxlength="40" placeholder="Your name"><label>Bio</label><textarea id="bio" maxlength="180" style="min-height:65px" placeholder="Tell people about you…"></textarea><button id="saveProfile" style="margin-top:10px">Save profile</button></section>
+<section class="card"><h2>Share something ✦</h2><textarea id="postText" maxlength="1500" placeholder="What's on your mind?"></textarea><div class="row"><span class="muted">Keep it real. Keep it respectful.</span><button id="publish">Publish post</button></div></section>
+<section class="card"><div class="row" style="align-items:center"><h2 style="margin:0">The feed</h2><button class="secondary" id="refresh" style="flex:0 0 auto">Refresh</button></div><div id="feed"><p class="muted">Loading posts…</p></div></section></main>
+<footer>Rick Rich © <span id="year"></span></footer></div>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getDatabase,ref,push,set,get,remove,query,orderByChild,limitToLast,onValue} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+// YOUR FIREBASE PROJECT DETAILS ARE ALREADY ENTERED BELOW.
+const firebaseConfig={
+apiKey:"AIzaSyCExUmvIQfzT7qdpqm7fVNsSGAEUt0DCc",
+authDomain:"rick-rich.firebaseapp.com",
+databaseURL:"https://rick-rich-default-rtdb.firebaseio.com",
+projectId:"rick-rich",
+storageBucket:"rick-rich.firebasestorage.app",
+messagingSenderId:"277747598996",
+appId:"1:277747598996:web:f6b84b254b143acd629681",
+measurementId:"G-NFM9GMZWLD"
+};
+const $=id=>document.getElementById(id);$("year").textContent=new Date().getFullYear();
+const fb=initializeApp(firebaseConfig),auth=getAuth(fb),db=getDatabase(fb);let me=null,stopFeed=null;
+function status(s){$("status").textContent=s}
+function err(e){const m={"auth/unauthorized-domain":"This website address is not authorized yet. In Firebase Console, open Authentication → Settings → Authorized domains and add your GitHub Pages domain.","auth/invalid-credential":"Email or password is incorrect.","auth/email-already-in-use":"That email already has an account. Log in instead.","auth/weak-password":"Use at least 6 characters for your password.","auth/network-request-failed":"Check your internet connection.","PERMISSION_DENIED":"Firebase database rules blocked this action."};return m[e.code]||e.message||"Something went wrong."}
+$("authForm").onsubmit=async e=>{e.preventDefault();try{status("Logging in…");await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value)}catch(x){status(err(x))}};
+$("signup").onclick=async()=>{try{status("Creating account…");await createUserWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);status("Account created! Set your display name below.")}catch(x){status(err(x))}};
+$("logout").onclick=()=>signOut(auth);
+function profile(name,bio){$("welcome").textContent=name||"Your profile";$("avatar").textContent=(name||"R").charAt(0).toUpperCase();$("displayName").value=name||"";$("bio").value=bio||""}
+$("saveProfile").onclick=async()=>{if(!me)return;let name=$("displayName").value.trim(),bio=$("bio").value.trim();if(!name){alert("Enter a display name first.");return}try{await set(ref(db,"profiles/"+me.uid),{name,bio,updatedAt:Date.now()});profile(name,bio);alert("Profile saved!")}catch(x){alert(err(x))}};
+$("publish").onclick=async()=>{if(!me)return;let text=$("postText").value.trim();if(!text){alert("Write a post first.");return}try{let p=(await get(ref(db,"profiles/"+me.uid))).val()||{};await set(push(ref(db,"posts")),{text,uid:me.uid,author:p.name||me.email.split("@")[0],createdAt:Date.now()});$("postText").value=""}catch(x){alert(err(x))}};
+function loadFeed(){if(stopFeed)stopFeed();stopFeed=onValue(query(ref(db,"posts"),orderByChild("createdAt"),limitToLast(100)),snap=>{let arr=[];snap.forEach(c=>arr.push({id:c.key,...c.val()}));arr.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));let feed=$("feed");feed.replaceChildren();if(!arr.length){feed.innerHTML='<p class="muted">No posts yet. Be the first to share.</p>';return}for(let p of arr){let el=document.createElement("article");el.className="post";let head=document.createElement("div");head.className="posthead";let left=document.createElement("div"),a=document.createElement("div"),d=document.createElement("div");a.className="author";a.textContent=p.author||"Rick Rich member";d.className="date";d.textContent=p.createdAt?new Date(p.createdAt).toLocaleString():"";left.append(a,d);head.append(left);if(me&&p.uid===me.uid){let b=document.createElement("button");b.className="danger";b.textContent="Delete";b.onclick=async()=>{if(confirm("Delete this post?"))try{await remove(ref(db,"posts/"+p.id))}catch(x){alert(err(x))}};head.append(b)}let body=document.createElement("div");body.className="postbody";body.textContent=p.text||"";el.append(head,body);feed.append(el)}},x=>{$("feed").textContent=err(x)})}
+$("refresh").onclick=loadFeed;
+onAuthStateChanged(auth,async user=>{me=user;$("authCard").classList.toggle("hidden",!!user);$("app").classList.toggle("hidden",!user);if(!user){if(stopFeed)stopFeed();return}$("accountEmail").textContent=user.email||"";try{let p=(await get(ref(db,"profiles/"+user.uid))).val()||{};profile(p.name||user.email.split("@")[0],p.bio||"");loadFeed()}catch(x){status(err(x))}});
+status("Ready. Log in or create an account.");
+</script><script>if ("serviceWorker" in navigator && location.protocol.startsWith("http")) { window.addEventListener("load", () => navigator.serviceWorker.register("./service-worker.js").catch(console.warn)); }</script>
+</body></html>
