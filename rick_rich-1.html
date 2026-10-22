@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rick Rich</title>
+<style>
+:root{--gold:#d4af37;--black:#080808;--card:#151515;--text:#f5f5f5;--muted:#aaa}
+*{box-sizing:border-box}body{margin:0;background:var(--black);color:var(--text);font-family:Arial,sans-serif}
+button,input,textarea{font:inherit}button{cursor:pointer}
+header{background:#101010;border-bottom:1px solid #292929;padding:17px;position:sticky;top:0;z-index:5}
+.header-inner{max-width:720px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font-size:25px;font-weight:900;letter-spacing:1px;color:var(--gold)}.tagline{color:var(--muted);font-size:11px;margin-top:4px}
+.gold-button{background:var(--gold);color:#090909;border:0;border-radius:9px;padding:12px 16px;font-weight:bold}
+.gold-button:disabled{opacity:.5;cursor:not-allowed}.dark-button{background:#242424;color:white;border:1px solid #383838;border-radius:9px;padding:10px 13px}
+main{max-width:650px;margin:auto;padding:20px 14px 70px}.card{background:var(--card);border:1px solid #292929;border-radius:16px;padding:18px;margin-bottom:17px}
+h1,h2,h3,p{margin-top:0}h2{font-size:21px}.gold{color:var(--gold)}.muted{color:var(--muted);font-size:13px;line-height:1.5}
+input,textarea{width:100%;background:#090909;color:white;border:1px solid #353535;border-radius:10px;padding:13px;margin:7px 0 13px;outline:none}
+input:focus,textarea:focus{border-color:var(--gold)}textarea{min-height:100px;resize:vertical}label{font-size:13px;color:#ddd}.full{width:100%}.hidden{display:none!important}
+.status{font-size:13px;line-height:1.5;margin:12px 0 0;overflow-wrap:anywhere}.error{color:#ff8585}.success{color:#9be5a8}
+.switch{color:var(--gold);background:none;border:none;padding:10px 0 0}.profile-row{display:flex;align-items:center;gap:12px}
+.avatar{width:48px;height:48px;border-radius:50%;background:#28200a;border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:bold;font-size:20px;overflow:hidden;flex-shrink:0}
+.avatar img{width:100%;height:100%;object-fit:cover}.post-top{display:flex;align-items:center;gap:10px;margin-bottom:15px}
+.post-name{font-weight:bold}.post-date{color:var(--muted);font-size:11px;margin-top:5px}
+.post-text{line-height:1.65;overflow-wrap:anywhere;white-space:pre-wrap}.post-actions{border-top:1px solid #303030;padding-top:12px;margin-top:14px;display:flex;justify-content:space-between;align-items:center}
+.delete-button{color:#ff9292;background:none;border:0;font-size:12px}.empty{text-align:center;padding:30px 10px;color:var(--muted)}
+footer{text-align:center;color:#777;font-size:11px;padding:20px}
+@media(max-width:400px){.logo{font-size:21px}header{padding:13px}.gold-button{padding:10px 12px}}
+</style>
+</head>
+<body>
+<header><div class="header-inner"><div><div class="logo">RICK <span>RICH.</span></div><div class="tagline">YOUR WORLD. YOUR STYLE. YOUR PEOPLE.</div></div><button id="logoutBtn" class="dark-button hidden">Log out</button></div></header>
+<main>
+<section id="authSection" class="card">
+<h2 id="authTitle">Welcome to <span class="gold">Rick Rich</span></h2><p class="muted">Your people. Your world. Your style.</p>
+<form id="authForm">
+<div id="nameField"><label for="displayName">Your display name</label><input id="displayName" type="text" placeholder="What should people call you?" maxlength="40" autocomplete="nickname"></div>
+<label for="email">Email address</label><input id="email" type="email" required placeholder="you@example.com" autocomplete="email">
+<label for="password">Password</label><input id="password" type="password" required placeholder="At least 6 characters" minlength="6" autocomplete="current-password">
+<button id="authSubmit" class="gold-button full" type="submit">Create account</button></form>
+<button id="switchAuth" class="switch">Already have an account? Log in</button><p id="authMessage" class="status" role="status"></p>
+</section>
+<section id="appSection" class="hidden">
+<div class="card"><div class="profile-row"><div class="avatar" id="mainAvatar">R</div><div style="flex:1;min-width:0"><div class="muted">WELCOME BACK</div><h2 style="margin:5px 0" id="welcomeName">Member</h2><div class="muted">Welcome to your world.</div></div></div></div>
+<details class="card"><summary class="gold" style="cursor:pointer;font-weight:bold">Edit your profile</summary>
+<form id="profileForm" style="margin-top:18px"><label for="profileName">Display name</label><input id="profileName" maxlength="40" required><label for="bioInput">Your bio</label><textarea id="bioInput" maxlength="160" placeholder="Tell people a little about yourself"></textarea><button class="gold-button full" type="submit">Save profile</button><p id="profileMessage" class="status"></p></form>
+<p class="muted">Your display name is used on new posts. The bio is saved in this browser for now and is not yet synced to other devices.</p></details>
+<section class="card"><h2>Create a <span class="gold">post</span></h2><p class="muted">Share what's happening with your people.</p>
+<form id="postForm"><textarea id="postText" required maxlength="2000" placeholder="What's on your mind?"></textarea><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span class="muted">Text posts · Up to 2,000 characters</span><button id="publishBtn" class="gold-button" type="submit">Publish ↗</button></div></form><p id="postMessage" class="status" role="status"></p></section>
+<section><h2>Trending <span class="gold">feed</span></h2><p class="muted">Posts from the Rick Rich community.</p><div id="feed"><div class="card empty">Loading posts...</div></div></section>
+</section>
+<footer>RICK RICH © <span id="year"></span> · YOUR WORLD, YOUR STYLE.</footer>
+</main>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,updateProfile,signOut} from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+import {getDatabase,ref,push,set,onValue,remove} from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+const firebaseConfig={apiKey:"AIzaSyCExUmvIQfz7T0qdpqm7fVNsSGAEUt0DCc",authDomain:"rick-rich.firebaseapp.com",databaseURL:"https://rick-rich-default-rtdb.firebaseio.com",projectId:"rick-rich",storageBucket:"rick-rich.firebasestorage.app",messagingSenderId:"277747598996",appId:"1:277747598996:web:f6b84b254b143acd629681",measurementId:"G-NFM9GMZWLD"};
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getDatabase(app);
+let isLoginMode=false,feedUnsubscribe=null,currentUser=null;
+const $=id=>document.getElementById(id);$("year").textContent=new Date().getFullYear();
+function showMessage(id,message,type=""){const el=$(id);el.textContent=message;el.className="status "+type}
+function safeError(error){const messages={"auth/email-already-in-use":"That email already has an account. Try logging in.","auth/invalid-email":"Please enter a valid email address.","auth/weak-password":"Choose a stronger password with at least 6 characters.","auth/invalid-credential":"Email or password is incorrect.","auth/network-request-failed":"Network error. Check your internet connection.","auth/too-many-requests":"Too many attempts. Please wait and try again.","PERMISSION_DENIED":"Database access was denied. Check your Firebase Rules."};return messages[error.code]||error.message||"Something went wrong. Please try again."}
+function displayNameFor(user){return user.displayName||(user.email?user.email.split("@")[0]:"Rick Rich member")}
+function renderAvatar(name){$("mainAvatar").textContent=(name||"R").trim().charAt(0).toUpperCase()||"R"}
+function setAuthMode(loginMode){isLoginMode=loginMode;$("authTitle").innerHTML=loginMode?'Welcome <span class="gold">back</span>':'Welcome to <span class="gold">Rick Rich</span>';$("nameField").classList.toggle("hidden",loginMode);$("displayName").required=!loginMode;$("authSubmit").textContent=loginMode?"Log in":"Create account";$("switchAuth").textContent=loginMode?"New here? Create an account":"Already have an account? Log in";showMessage("authMessage","")}
+$("switchAuth").addEventListener("click",()=>setAuthMode(!isLoginMode));
+$("authForm").addEventListener("submit",async event=>{event.preventDefault();const email=$("email").value.trim(),password=$("password").value,name=$("displayName").value.trim();$("authSubmit").disabled=true;showMessage("authMessage","Please wait...");try{if(isLoginMode){await signInWithEmailAndPassword(auth,email,password)}else{if(!name)throw new Error("Please enter your display name.");const credential=await createUserWithEmailAndPassword(auth,email,password);await updateProfile(credential.user,{displayName:name})}$("authForm").reset();showMessage("authMessage","")}catch(error){showMessage("authMessage",safeError(error),"error")}finally{$("authSubmit").disabled=false}});
+function loadLocalProfile(user){let saved={};try{saved=JSON.parse(localStorage.getItem("rickRichProfile_"+user.uid)||"{}")}catch{}const name=saved.name||displayNameFor(user);$("welcomeName").textContent=name;$("profileName").value=name;$("bioInput").value=saved.bio||"";renderAvatar(name)}
+$("profileForm").addEventListener("submit",async event=>{event.preventDefault();if(!currentUser)return;const name=$("profileName").value.trim(),bio=$("bioInput").value.trim();if(!name){showMessage("profileMessage","Please enter a display name.","error");return}try{await updateProfile(currentUser,{displayName:name});localStorage.setItem("rickRichProfile_"+currentUser.uid,JSON.stringify({name,bio}));loadLocalProfile(currentUser);showMessage("profileMessage","Profile saved on this browser.","success")}catch(error){showMessage("profileMessage",safeError(error),"error")}});
+$("postForm").addEventListener("submit",async event=>{event.preventDefault();if(!currentUser)return;const text=$("postText").value.trim();if(!text){showMessage("postMessage","Write something before publishing.","error");return}const button=$("publishBtn");button.disabled=true;showMessage("postMessage","Publishing your post...");try{const name=displayNameFor(currentUser);let saved={};try{saved=JSON.parse(localStorage.getItem("rickRichProfile_"+currentUser.uid)||"{}")}catch{}const postRef=push(ref(db,"posts"));await set(postRef,{uid:currentUser.uid,name:saved.name||name,text,createdAt:Date.now()});$("postText").value="";showMessage("postMessage","Your post is live!","success")}catch(error){showMessage("postMessage",safeError(error),"error")}finally{button.disabled=false}});
+function formatDate(timestamp){if(!timestamp)return"Just now";return new Date(timestamp).toLocaleString([],{dateStyle:"medium",timeStyle:"short"})}
+function makePostCard(id,post){const card=document.createElement("article");card.className="card";const top=document.createElement("div");top.className="post-top";const avatar=document.createElement("div");avatar.className="avatar";avatar.textContent=(post.name||"R").trim().charAt(0).toUpperCase()||"R";const details=document.createElement("div");const name=document.createElement("div");name.className="post-name gold";name.textContent=post.name||"Rick Rich member";const date=document.createElement("div");date.className="post-date";date.textContent=formatDate(post.createdAt);details.append(name,date);top.append(avatar,details);const text=document.createElement("p");text.className="post-text";text.textContent=post.text||"";card.append(top,text);const actions=document.createElement("div");actions.className="post-actions";const label=document.createElement("span");label.className="muted";label.textContent="✦ Rick Rich community";actions.append(label);if(currentUser&&post.uid===currentUser.uid){const deleteBtn=document.createElement("button");deleteBtn.className="delete-button";deleteBtn.textContent="Delete post";deleteBtn.addEventListener("click",async()=>{if(!confirm("Delete this post?"))return;try{await remove(ref(db,"posts/"+id))}catch(error){alert(safeError(error))}});actions.append(deleteBtn)}card.append(actions);return card}
+function startFeed(){if(feedUnsubscribe)feedUnsubscribe();$("feed").replaceChildren();feedUnsubscribe=onValue(ref(db,"posts"),snapshot=>{const posts=[];snapshot.forEach(child=>posts.push({id:child.key,...child.val()}));posts.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));$("feed").replaceChildren();if(posts.length===0){const empty=document.createElement("div");empty.className="card empty";empty.textContent="No posts yet. Be the first to share something!";$("feed").append(empty);return}posts.forEach(post=>$("feed").append(makePostCard(post.id,post)))},error=>{$("feed").replaceChildren();const errorCard=document.createElement("div");errorCard.className="card status error";errorCard.textContent="Couldn't load posts: "+safeError(error);$("feed").append(errorCard)})}
+onAuthStateChanged(auth,user=>{currentUser=user;$("authSection").classList.toggle("hidden",!!user);$("appSection").classList.toggle("hidden",!user);$("logoutBtn").classList.toggle("hidden",!user);if(user){loadLocalProfile(user);startFeed()}else{if(feedUnsubscribe){feedUnsubscribe();feedUnsubscribe=null}$("feed").replaceChildren()}});
+$("logoutBtn").addEventListener("click",async()=>{try{await signOut(auth)}catch(error){alert(safeError(error))}});
+</script>
+</body>
+</html>
